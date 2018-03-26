@@ -1,6 +1,6 @@
 from evaluation.models import Evaluation, Question
 
-__all__ = ['create_evaluation', 'create_question', 'view_question']
+__all__ = [ 'create_evaluation', 'create_question', 'view_questions' ]
 
 from django.shortcuts import render
 from django.contrib.auth import authenticate
@@ -79,19 +79,19 @@ def create_question(request):
     #return Response(eval_details, status=status.HTTP_201_CREATED)
 
     @api_view(['GET'])
-@permission_classes([AllowAny, ])
-def view_question(request):
-    """
-    Endpoint: /user/view_questions/<status>/
-    Method: GET
-    Allowed users: Admins
-    Response status code: 200 success
-    Description: Admins can view all users created
-    """
-   # if not request.user.has_perm('users.can_view_users'):
-    #    return Response({'error': "can not view users"}, status=status.HTTP_403_FORBIDDEN)
+    @permission_classes([AllowAny, ])
+    def view_questions(request):
+        """
+        Endpoint: /user/view_questions/<status>/
+        Method: GET
+        Allowed users: Admins
+        Response status code: 200 success
+        Description: Admins can view all users created
+        """
+        # if not request.user.has_perm('users.can_view_users'):
+        # #    return Response({'error': "can not view users"}, status=status.HTTP_403_FORBIDDEN)
 
-   que = Question.objects.all()
+    que = Question.objects.all()
     if not que:
         return Response([])
 
