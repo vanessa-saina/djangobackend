@@ -1,6 +1,6 @@
 from evaluation.models import Evaluation, Question
 
-__all__ = [ 'create_evaluation', 'create_question', 'view_questions' ]
+__all__ = ['create_evaluation', 'create_question', 'view_questions', 'view_evaluations']
 
 from django.shortcuts import render
 from django.contrib.auth import authenticate
@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 
+
 # Create your views here.
 @api_view(['POST'])
 @permission_classes([AllowAny, ])
@@ -27,8 +28,8 @@ def create_evaluation(request):
     Description: admin can create users of a
     """
 
-  #  if not request.user.has_perm('users.add_user'):
-   #     return Response({'error': 'can not create user'}, status=status.HTTP_403_FORBIDDEN)
+    #  if not request.user.has_perm('users.add_user'):
+    #     return Response({'error': 'can not create user'}, status=status.HTTP_403_FORBIDDEN)
 
 
     evaluation_details = request.data
@@ -42,10 +43,9 @@ def create_evaluation(request):
     eval_details = {}
     eval_details['evaluation_id'] = eval.id
 
-
-
-   # return Response({'success': "user added successfully"}, status=status.HTTP_201_CREATED)
+    # return Response({'success': "user added successfully"}, status=status.HTTP_201_CREATED)
     return Response(eval_details, status=status.HTTP_201_CREATED)
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny, ])
@@ -58,8 +58,8 @@ def create_question(request):
     Description: admin can create users of a
     """
 
-  #  if not request.user.has_perm('users.add_user'):
-   #     return Response({'error': 'can not create user'}, status=status.HTTP_403_FORBIDDEN)
+    #  if not request.user.has_perm('users.add_user'):
+    #     return Response({'error': 'can not create user'}, status=status.HTTP_403_FORBIDDEN)
 
 
     question_details = request.data
@@ -73,23 +73,23 @@ def create_question(request):
     )
     que.save()
 
-
-
     return Response({'success': "questions added successfully"}, status=status.HTTP_201_CREATED)
-    #return Response(eval_details, status=status.HTTP_201_CREATED)
+    # return Response(eval_details, status=status.HTTP_201_CREATED)
 
-    @api_view(['GET'])
-    @permission_classes([AllowAny, ])
-    def view_questions(request):
-        """
-        Endpoint: /user/view_questions/<status>/
-        Method: GET
-        Allowed users: Admins
-        Response status code: 200 success
-        Description: Admins can view all users created
-        """
-        # if not request.user.has_perm('users.can_view_users'):
-        # #    return Response({'error': "can not view users"}, status=status.HTTP_403_FORBIDDEN)
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
+def view_questions(request):
+    """
+    Endpoint: /user/view_questions/<status>/
+    Method: GET
+    Allowed users: Admins
+    Response status code: 200 success
+    Description: Admins can view all users created
+    """
+    # if not request.user.has_perm('users.can_view_users'):
+    #    return Response({'error': "can not view users"}, status=status.HTTP_403_FORBIDDEN)
+
 
     que = Question.objects.all()
     if not que:
@@ -102,8 +102,35 @@ def create_question(request):
         question_details['category'] = question.category
         question_details['evaluation_id'] = question.evaluation_id
         question_details['rating'] = question.rating
-       
 
-        data.append(question_details)
+    data.append(question_details)
+
+    return Response(data)
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
+def view_evaluations(request):
+    """
+    Endpoint: /user/view_questions/<status>/
+     Method: GET
+    Allowed users: Admins
+    Response status code: 200 success
+    Description: Admins can view all users created
+    """
+    # if not request.user.has_perm('users.can_view_users'):
+    #    return Response({'error': "can not view users"}, status=status.HTTP_403_FORBIDDEN)
+
+
+    eval = Evaluation.objects.all()
+    if not eval:
+        return Response([])
+
+    data = []
+    for evaluation in eval:
+        evaluation_details = {}
+        evaluation_details['lec_id'] = evaluation.lec_id
+        evaluation_details['student_id'] = evaluation.student_id
+
+    data.append(evaluation_details)
 
     return Response(data)
