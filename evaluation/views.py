@@ -134,3 +134,23 @@ def view_evaluations(request):
     data.append(evaluation_details)
 
     return Response(data)
+
+@api_view(['GET'])
+@permission_classes((AllowAny, ))
+def view_evaluation_id(request, lecture_id):
+    """
+    Endpoint: /users/check_activation_key/<key>/
+    Method: GET
+    Allowed users: All users
+    Response status code: 200 success
+    Description: Used to check if activation key is in the DB 
+    """
+    try:
+        evaluation = Evaluation.objects.get(lec_id=lecture_id)
+        data = {
+            "name": "%s %s" % (user.first_name, user.last_name),
+            "key": user.phone_activation_code
+        }
+        return Response(data)
+    except ObjectDoesNotExist:
+        return Response({'error': "not found"}, status=status.HTTP_404_NOT_FOUND)
