@@ -1,3 +1,4 @@
 .env
 /development/settings.py
 *.pyc
+.idea/
