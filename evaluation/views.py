@@ -1,6 +1,7 @@
 from evaluation.models import Evaluation, Question
 
-__all__ = ['create_evaluation', 'create_question', 'view_questions', 'view_evaluations']
+__all__ = ['create_evaluation', 'create_question', 'view_questions', 'view_evaluations', 'view_evaluation_by_lec',
+           'create_questions_many']
 
 from django.shortcuts import render
 from django.contrib.auth import authenticate
@@ -73,9 +74,35 @@ def create_question(request):
     )
     que.save()
 
-    return Response({'success': "questions added successfully"}, status=status.HTTP_201_CREATED)
+    return Response({'success': "question added successfully"}, status=status.HTTP_201_CREATED)
     # return Response(eval_details, status=status.HTTP_201_CREATED)
 
+@api_view(['POST'])
+@permission_classes([AllowAny, ])
+def create_questions_many(request):
+    """
+    Endpoint: /users/create_user/
+    Method: POST
+    Allowed users: All user
+    Response status code: 201 created
+    Description: admin can create users of a
+    """
+
+    #  if not request.user.has_perm('users.add_user'):
+    #     return Response({'error': 'can not create user'}, status=status.HTTP_403_FORBIDDEN)
+    question_details = request.data
+    for que_details in question_details:
+        que = Question(
+            question=que_details['question'],
+            category=que_details['category'],
+            evaluation_id=que_details['evaluation_id'],
+            rating=que_details['rating']
+
+        )
+        que.save()
+
+    return Response({'success': "questions added successfully"}, status=status.HTTP_201_CREATED)
+    # return Response(eval_details, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
 @permission_classes([AllowAny, ])
@@ -103,7 +130,7 @@ def view_questions(request):
         question_details['evaluation_id'] = question.evaluation_id
         question_details['rating'] = question.rating
 
-    data.append(question_details)
+        data.append(question_details)
 
     return Response(data)
 
@@ -128,29 +155,49 @@ def view_evaluations(request):
     data = []
     for evaluation in eval:
         evaluation_details = {}
+        evaluation_details['evaluation_id'] = evaluation.id
         evaluation_details['lec_id'] = evaluation.lec_id
-        evaluation_details['student_id'] = evaluation.student_id
+        evaluation_details['stud_id'] = evaluation.student_id
 
-    data.append(evaluation_details)
+        data.append(evaluation_details)
 
     return Response(data)
 
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
-def view_evaluation_id(request, lecture_id):
+def view_evaluation_by_lec(request, lec):
     """
-    Endpoint: /users/check_activation_key/<key>/
+    Endpoint: /evaluation/view_evaluations/<lec>/
     Method: GET
     Allowed users: All users
     Response status code: 200 success
     Description: Used to check if activation key is in the DB 
     """
     try:
-        evaluation = Evaluation.objects.get(lec_id=lecture_id)
-        data = {
-            "name": "%s %s" % (user.first_name, user.last_name),
-            "key": user.phone_activation_code
-        }
+        evals = Evaluation.objects.filter(lec_id=lec)
+        data = []
+        question_details = {}
+        evaluation_details = {}
+        for evaluation in evals:
+
+            evaluation_details['evaluation_id'] = evaluation.id
+            evaluation_details['lec_id'] = evaluation.lec_id
+            evaluation_details['stud_id'] = evaluation.student_id
+            que = Question.objects.filter(evaluation_id=evaluation.id)
+            que_data = []
+
+            for question in que:
+
+                question_details['question'] = question.question
+                question_details['category'] = question.category
+                question_details['evaluation_id'] = question.evaluation_id
+                question_details['rating'] = question.rating
+
+                que_data.append(question_details)
+            evaluation_details['questions'] = que_data
+
+        data.append(evaluation_details)
+
         return Response(data)
     except ObjectDoesNotExist:
         return Response({'error': "not found"}, status=status.HTTP_404_NOT_FOUND)
