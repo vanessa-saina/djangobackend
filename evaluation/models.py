@@ -6,11 +6,8 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
-from users.models import User
+from users.models import User, Unit
 from django.db.models import Q
-
-
-
 
 RATINGS = (
     ('1', 'Poor'),
@@ -19,15 +16,16 @@ RATINGS = (
     ('4', 'Good'),
     ('5', 'Very Good'),
 )
+
+
+
 class Evaluation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    #lec_id = models.CharField(null=True, max_length=255)
-    #student_id = models.CharField(null=True, max_length=255)
-    student_id = models.ForeignKey(User, related_name="student", limit_choices_to=Q(role='student'), on_delete=models.CASCADE, null=True)
-    lecturer_id = models.ForeignKey(User, related_name="lecturer", limit_choices_to=Q(role='lecturer'), on_delete=models.CASCADE, null=True)
-    #question = models.ForeignKey(Question, related_name="payer_checked", on_delete=models.CASCADE, null=True)
-    #question = ArrayField(ArrayField(models.IntegerField()))
-
+    student_id = models.ForeignKey(User, related_name="student", limit_choices_to=Q(role='student'),
+                                   on_delete=models.CASCADE, null=True)
+    lecturer_id = models.ForeignKey(User, related_name="lecturer", limit_choices_to=Q(role='lecturer'),
+                                    on_delete=models.CASCADE, null=True)
+    unit_id = models.ForeignKey(Unit, related_name="unit", on_delete=models.SET_NULL, null=True)
     date_added = models.DateTimeField(auto_now_add=True, null=True)
     date_modified = models.DateTimeField(auto_now=True, null=True)
 
@@ -50,16 +48,17 @@ class Evaluation(models.Model):
     def stud_id(self):
         return str(self.student_id.id)
 
+    def unit_id(self):
+        return str(self.unit_id.id)
+
     def __unicode__(self):
         return "%s | %s" % (str(self.id), self.date_added)
-
 
 
 class Question(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     question = models.CharField(max_length=200)
     category = models.CharField(max_length=100, null=True)
-    #evaluation_id = models.CharField(null=True, max_length=255)
     evaluation_id = models.ForeignKey(Evaluation, on_delete=models.CASCADE, null=True)
     rating = models.CharField(max_length=30, choices=RATINGS, default='1')
     date_added = models.DateTimeField(auto_now_add=True, null=True)
@@ -70,3 +69,4 @@ class Question(models.Model):
 
     def __unicode__(self):
         return "%s %s" % (self.question, self.rating)
+
