@@ -120,6 +120,9 @@ DATABASES = {
         "PORT": 5432,
     }
 }
+AUTHENTICATION_BACKENDS = (
+    ('django.contrib.auth.backends.ModelBackend'),
+)
 
 #DATABASES = {
 #    'default': dj_database_url.config()
@@ -228,4 +231,5 @@ CACHES = {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
     }
+
 }

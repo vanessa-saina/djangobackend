@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.signals import user_logged_in
 from django.db.models import Q
+from users.models import User
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -34,10 +35,13 @@ def create_evaluation(request):
 
 
     evaluation_details = request.data
+    lecturer = User.objects.get(id=evaluation_details['lec_id'])
+    student = User.objects.get(id=evaluation_details['stud_id'])
+
 
     eval = Evaluation(
-        lec_id=evaluation_details['lec_id'],
-        student_id=evaluation_details['stud_id'],
+        lecturer_id=lecturer,
+        student_id=student,
 
     )
     eval.save()
@@ -64,11 +68,12 @@ def create_question(request):
 
 
     question_details = request.data
+    evaluation = Evaluation.objects.get(id=question_details['evaluation_id'])
 
     que = Question(
         question=question_details['question'],
         category=question_details['category'],
-        evaluation_id=question_details['evaluation_id'],
+        evaluation_id=evaluation,
         rating=question_details['rating']
 
     )
@@ -92,10 +97,11 @@ def create_questions_many(request):
     #     return Response({'error': 'can not create user'}, status=status.HTTP_403_FORBIDDEN)
     question_details = request.data
     for que_details in question_details:
+        evaluation = Evaluation.objects.get(id=question_details['evaluation_id'])
         que = Question(
             question=que_details['question'],
             category=que_details['category'],
-            evaluation_id=que_details['evaluation_id'],
+            evaluation_id=evaluation,
             rating=que_details['rating']
 
         )
@@ -127,7 +133,7 @@ def view_questions(request):
         question_details = {}
         question_details['question'] = question.question
         question_details['category'] = question.category
-        question_details['evaluation_id'] = question.evaluation_id
+        question_details['evaluation_id'] = question.eval_id()
         question_details['rating'] = question.rating
 
         data.append(question_details)
@@ -156,8 +162,9 @@ def view_evaluations(request):
     for evaluation in eval:
         evaluation_details = {}
         evaluation_details['evaluation_id'] = evaluation.id
-        evaluation_details['lec_id'] = evaluation.lec_id
-        evaluation_details['stud_id'] = evaluation.student_id
+        #evaluation_details['lecturer_id'] = evaluation.lecturer_id
+        evaluation_details['lecturer_id'] = evaluation.lec_id()
+        evaluation_details['student_id'] = evaluation.stud_id()
 
         data.append(evaluation_details)
 
@@ -174,15 +181,15 @@ def view_evaluation_by_lec(request, lec):
     Description: Used to check if activation key is in the DB 
     """
     try:
-        evals = Evaluation.objects.filter(lec_id=lec)
+        evals = Evaluation.objects.filter(lecturer_id=lec)
         data = []
         question_details = {}
         evaluation_details = {}
         for evaluation in evals:
 
             evaluation_details['evaluation_id'] = evaluation.id
-            evaluation_details['lec_id'] = evaluation.lec_id
-            evaluation_details['stud_id'] = evaluation.student_id
+            evaluation_details['lecturer_id'] = evaluation.lec_id()
+            evaluation_details['student_id'] = evaluation.stud_id()
             que = Question.objects.filter(evaluation_id=evaluation.id)
             que_data = []
 
