@@ -1,7 +1,7 @@
 from evaluation.models import Evaluation, Question
 
 __all__ = ['create_evaluation', 'create_question', 'view_questions', 'view_evaluations', 'view_evaluation_by_lec',
-           'create_questions_many']
+           'create_questions_many', 'create_unit', 'view_units']
 
 from django.shortcuts import render
 from django.contrib.auth import authenticate
@@ -38,7 +38,7 @@ def create_evaluation(request):
     eval = Evaluation(
         lec_id=evaluation_details['lec_id'],
         student_id=evaluation_details['stud_id'],
-
+        unit_id=evaluation_details['unit_id'],
     )
     eval.save()
     eval_details = {}
@@ -104,6 +104,19 @@ def create_questions_many(request):
     return Response({'success': "questions added successfully"}, status=status.HTTP_201_CREATED)
     # return Response(eval_details, status=status.HTTP_201_CREATED)
 
+@api_view(['POST'])
+@permission_classes([AllowAny, ])
+def create_unit(request):
+    unit_details = request.data
+    for uni_details in unit_details:
+        uni = Unit(
+            name = uni_details['name'],
+        )
+        uni.save()
+
+    return Response({'success': "units added successfully"}, status=status.HTTP_201_CREATED)
+
+
 @api_view(['GET'])
 @permission_classes([AllowAny, ])
 def view_questions(request):
@@ -158,6 +171,7 @@ def view_evaluations(request):
         evaluation_details['evaluation_id'] = evaluation.id
         evaluation_details['lec_id'] = evaluation.lec_id
         evaluation_details['stud_id'] = evaluation.student_id
+        evaluation_details['unit_id'] = evaluation.unit_id
 
         data.append(evaluation_details)
 
@@ -167,7 +181,9 @@ def view_evaluations(request):
 @permission_classes((AllowAny, ))
 def view_evaluation_by_lec(request, lec):
     """
-    Endpoint: /evaluation/view_evaluations/<lec>/
+    Endpoint: /evaluation/view_evaluations/<lec>/evaluation_details['lec_id'] = evaluation.lec_id
+        evaluation_details['stud_id'] = evaluation.student_id
+
     Method: GET
     Allowed users: All users
     Response status code: 200 success
@@ -201,3 +217,20 @@ def view_evaluation_by_lec(request, lec):
         return Response(data)
     except ObjectDoesNotExist:
         return Response({'error': "not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
+def view_units(request):
+    uni = Unit.objects.all()
+    if not uni:
+        return Response([])
+
+    data = []
+    for unit in uni:
+        unit_details = {}
+        unit_details['name'] = unit.name
+        unit_details['id'] = unit.id
+        data.append(unit_details)
+
+    return Response(data)

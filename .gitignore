@@ -1,5 +1,6 @@
+# Byte-compiled / optimized / DLL files
+*.pyc
+
 .env
 development/settings.py
 .idea
-# Byte-compiled / optimized / DLL files
-*.pyc
