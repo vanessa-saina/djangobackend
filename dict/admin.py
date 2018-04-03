@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from evaluation.models import Evaluation, Question
+from users.models import User, Unit
+
+admin.site.register(User)
+admin.site.register(Unit)
+admin.site.register(Evaluation)
+admin.site.register(Question)
+

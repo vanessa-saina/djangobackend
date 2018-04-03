@@ -85,6 +85,7 @@ def create_user(request):
         role=user_details['role'],
         status=200,
         is_active=True,
+        is_staff=False,
         password=make_password(user_details['password'])
     )
 
@@ -123,6 +124,7 @@ def view_users(request):
         user_details['email'] = user.email
         user_details['role'] = user.role
         user_details['id'] = user.id
+        user_details['staff'] = user.is_staff
 
         data.append(user_details)
 

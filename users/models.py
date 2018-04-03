@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from django.db import models
 
 # Create your models here.
+
+
 __all__ = ['User']
 
 import uuid
@@ -15,6 +17,17 @@ from .managers import UserManager
 
 
 # Create your models here.
+STATUSES = (
+    ('100', 'Created'),
+    ('200', 'Approved'),
+    ('300', 'Rejected'),
+)
+ROLES = (
+    ('student', 'student'),
+    ('lecturer', 'lecturer'),
+    ('admin', 'admin'),
+)
+
 class User(AbstractBaseUser, PermissionsMixin):
     """
 	User's table
@@ -27,14 +40,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     #email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30, null=False)
     last_name = models.CharField(max_length=30, null=False)
-    email= models.CharField(max_length=255,unique=True)
-    role= models.CharField(max_length=30, null=False)
-    unit=models.CharField(max_length=30, null=False)
+    email = models.CharField(max_length=255, unique=True)
+    role = models.CharField(max_length=30, choices=ROLES, default='student')
+    #unit = models.CharField(max_length=30, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=True)
 
     # Whether user has been approved or rejected
-    status = models.CharField(max_length=3, null=True)
+    status = models.CharField(max_length=3, choices=STATUSES, default='100')
 
     objects = UserManager()
 
@@ -56,6 +70,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         )
 
+
+
     def get_full_name(self):
         '''
 	    Returns the first_name plus the last_name, with a space in between.
@@ -74,4 +90,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
 		Human redeable string representation of a user.
 		"""
-        return "%s %s" % (self.first_name, self.last_name)
+        return "%s -- %s %s" % (self.email, self.first_name, self.last_name)
+        #return str(self.id)
+
+class Unit(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    name = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self):
+        return "%s | %s" % (str(self.id), self.name)
