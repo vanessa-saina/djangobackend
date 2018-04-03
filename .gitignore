@@ -5,8 +5,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 *py.c
-.env
+*.env
 development/settings.py
-.idea
-.vscode
+*.idea
+*.vscode
 
