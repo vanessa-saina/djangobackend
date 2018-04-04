@@ -27,15 +27,17 @@ ROLES = (
     ('lecturer', 'lecturer'),
     ('admin', 'admin'),
 )
+"""
+ User's table
+ statuses:
+     - 100: created
+     - 200: approved
+     - 300: rejected
+ """
+
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """
-	User's table
-	statuses:
-		- 100: created
-		- 200: approved
-		- 300: rejected
-	"""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     #email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30, null=False)
