@@ -37,7 +37,10 @@ class Evaluation(models.Model):
         eval = {
             "id": self.id,
             "created": self.date_added,
-            "student_id": self.student_id.id
+            "student_id": self.student_id.id,
+            "lecturer_id": self.lecturer_id.id,
+            "unit_id": self.unit_id.id
+
         }
 
         return eval
