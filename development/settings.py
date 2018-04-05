@@ -62,8 +62,9 @@ INSTALLED_APPS = [
     'corsheaders',
     # local apps
     'users',
-    'dict',
-    'evaluation'
+    'evaluation',
+    'dict'
+
 
 ]
 
