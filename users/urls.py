@@ -7,6 +7,7 @@ urlpatterns = [
 	url(r'^create_user/$', create_user),
 	url(r'^approve_users/$', approve_users),
 	url(r'^view_users/$', view_users),
+	url(r'^view_lecturers/$', view_lecturers),
 	url(r'^search_users/(?P<name>[A-Za-z]+)/$', search_users),
 	url(r'^delete_user/(?P<user_id>[0-9a-z-]+)/$', delete_user),
 	url(r'^check_activation_key/(?P<key>[A-Za-z0-9]+)/$',check_activation_key),

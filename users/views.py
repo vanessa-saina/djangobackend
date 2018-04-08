@@ -1,5 +1,5 @@
 __all__ = ['login', 'create_user', 'view_users', 'approve_users', 'delete_user',
-            'check_activation_key', 'update_account', 'search_users']
+            'check_activation_key', 'update_account', 'search_users', 'view_lecturers']
 
 import string
 
@@ -111,6 +111,39 @@ def view_users(request):
     #    return Response({'error': "can not view users"}, status=status.HTTP_403_FORBIDDEN)
 
     users = User.objects.all()
+    if not users:
+        return Response([])
+
+    data = []
+    for user in users:
+        user_details = {}
+        user_details['name'] = "%s %s" % (user.first_name, user.last_name)
+        user_details['status'] = user.is_active
+        user_details['date_created'] = user.date_joined
+        user_details['last_login'] = user.last_login
+        user_details['email'] = user.email
+        user_details['role'] = user.role
+        user_details['id'] = user.id
+        user_details['staff'] = user.is_staff
+
+        data.append(user_details)
+
+    return Response(data)
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
+def view_lecturers(request):
+    """
+    Endpoint: /user/view_users/<status>/
+    Method: GET
+    Allowed users: Admins
+    Response status code: 200 success
+    Description: Admins can view all users created
+    """
+   # if not request.user.has_perm('users.can_view_users'):
+    #    return Response({'error': "can not view users"}, status=status.HTTP_403_FORBIDDEN)
+
+    users = User.objects.filter(role='lecturer')
     if not users:
         return Response([])
 
