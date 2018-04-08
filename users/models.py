@@ -105,8 +105,8 @@ class Unit(models.Model):
 
 class Myunit(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    user = models.ForeignKey(User, related_name="user", on_delete=models.SET_NULL, null=True)
-    unit = models.ForeignKey(Unit, related_name="unit", on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, related_name="user", on_delete=models.CASCADE, null=True)
+    unit = models.ForeignKey(Unit, related_name="unit", on_delete=models.CASCADE, null=True)
     date_added = models.DateTimeField(auto_now_add=True, null=True)
     date_modified = models.DateTimeField(auto_now=True, null=True)
 

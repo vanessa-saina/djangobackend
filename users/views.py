@@ -17,7 +17,7 @@ from rest_framework.decorators import api_view, permission_classes
 
 from utilities.user import *
 
-from .models import User
+from .models import User, Myunit
 
 USER_CREATION_MESSAGE =  "Dear %s, You have just been registered on the Lecturer Evaluation platform with " \
                     "reg_number %s and password %s. " \
@@ -158,6 +158,7 @@ def view_lecturers(request):
         user_details['role'] = user.role
         user_details['id'] = user.id
         user_details['staff'] = user.is_staff
+     #   user_details['units'] = Myunit.objects.filter(id=user.id)
 
         data.append(user_details)
 
