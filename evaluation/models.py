@@ -18,7 +18,6 @@ RATINGS = (
 )
 
 
-
 class Evaluation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     student_id = models.ForeignKey(User, related_name="student", limit_choices_to=Q(role='student'),
@@ -72,4 +71,6 @@ class Question(models.Model):
 
     def __unicode__(self):
         return "%s %s" % (self.question, self.rating)
+
+
 

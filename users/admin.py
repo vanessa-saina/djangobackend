@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from evaluation.models import Evaluation, Question
-from users.models import User, Unit
+from users.models import User, Unit, Myunit
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -18,3 +18,4 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Unit)
 admin.site.register(Evaluation, EvaluationAdmin)
 admin.site.register(Question)
+admin.site.register(Myunit)

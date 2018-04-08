@@ -100,4 +100,21 @@ class Unit(models.Model):
     name = models.CharField(max_length=100, null=True)
 
     def __unicode__(self):
-        return "%s | %s" % (str(self.id), self.name)
+        return self.name
+
+
+class Myunit(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    user = models.ForeignKey(User, related_name="user", on_delete=models.SET_NULL, null=True)
+    unit = models.ForeignKey(Unit, related_name="unit", on_delete=models.SET_NULL, null=True)
+    date_added = models.DateTimeField(auto_now_add=True, null=True)
+    date_modified = models.DateTimeField(auto_now=True, null=True)
+
+    def get_user_id(self):
+        return str(self.user.id)
+
+    def get_unit_id(self):
+        return str(self.unit.id)
+
+    def __unicode__(self):
+        return "%s %s %s" % (self.user.first_name, self.user.last_name, self.unit.name)
