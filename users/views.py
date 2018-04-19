@@ -51,6 +51,7 @@ def login(request):
 
         user_details['token'] = authenticaction_token
         user_details['role'] = user.role
+        user_details['id'] = user.id
 
         # update the last login section
         user_logged_in.send(sender=user.__class__, request=request, user=user)

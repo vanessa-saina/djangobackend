@@ -35,22 +35,35 @@ def create_evaluation(request):
 
 
     evaluation_details = request.data
-    lecturer = User.objects.get(id=evaluation_details['lec_id'])
-    student = User.objects.get(id=evaluation_details['stud_id'])
-    unit = Unit.objects.get(id=evaluation_details['unit_id'])
+    lecturer = User.objects.get(id=evaluation_details['lecturer_id'])
+    student = User.objects.get(id=evaluation_details['student_id'])
+    #unit = Unit.objects.get(id=evaluation_details['unit_id'])
 
 
     eval = Evaluation(
         lecturer_id=lecturer,
         student_id=student,
-        unit_id=unit,
+      #  unit_id=unit,
     )
     eval.save()
     eval_details = {}
     eval_details['evaluation_id'] = eval.id
 
-    # return Response({'success': "user added successfully"}, status=status.HTTP_201_CREATED)
-    return Response(eval_details, status=status.HTTP_201_CREATED)
+    question_details = request.data['questions']
+    for que_details in question_details:
+        evaluation = Evaluation.objects.get(id=eval.id)
+        que = Question(
+            question=que_details['question'],
+            category=que_details['category'],
+            evaluation_id=evaluation,
+            rating=que_details['rating']
+
+        )
+    que.save()
+
+
+    return Response({'success': "Evaluation successfully"}, status=status.HTTP_201_CREATED)
+    #return Response(eval_details, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
