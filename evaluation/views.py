@@ -59,7 +59,7 @@ def create_evaluation(request):
             rating=que_details['rating']
 
         )
-    que.save()
+        que.save()
 
 
     return Response({'success': "Evaluation successfully"}, status=status.HTTP_201_CREATED)
@@ -219,14 +219,17 @@ def view_evaluation_by_lec(request, lec):
             evaluation_details['evaluation_id'] = evaluation.id
             evaluation_details['lecturer_id'] = evaluation.lec_id()
             evaluation_details['student_id'] = evaluation.stud_id()
-            que = Question.objects.filter(evaluation_id=evaluation.id)
+
+            ev = Evaluation.objects.filter(id=evaluation.id)
+
+            que = Question.objects.filter(evaluation_id=ev)
             que_data = []
 
             for question in que:
 
                 question_details['question'] = question.question
                 question_details['category'] = question.category
-                question_details['evaluation_id'] = question.evaluation_id
+                question_details['evaluation_id'] = question.eval_id()
                 question_details['rating'] = question.rating
 
                 que_data.append(question_details)
